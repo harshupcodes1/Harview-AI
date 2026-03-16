@@ -72,7 +72,8 @@ npm run dev
 
 ## 📸 Screenshots
 *(Coming Soon)*
-
+![alt text](<Screenshot 2026-03-15 233304.png>)
+![alt text](<Screenshot 2026-03-15 233346.png>)
 <br />
 
 ---
