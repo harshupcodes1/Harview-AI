@@ -73,10 +73,10 @@ npm run dev
 ## 📸 Screenshots
 
 ### Landing Page
-![Harview AI Landing Page](./Screenshot-2026-03-15-233304.png)
+![Harview AI Landing Page](./Screenshot%202026-03-15%20233304.png)
 
 ### User Dashboard
-![Harview AI Dashboard](./Screenshot-2026-03-15-233346.png)
+![Harview AI Dashboard](./Screenshot%202026-03-15%20233346.png)
 
 <br />
 
