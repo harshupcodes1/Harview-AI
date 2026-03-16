@@ -71,11 +71,12 @@ npm run dev
 ```
 
 ## 📸 Screenshots
-## 📸 Screenshots
 
-![Screenshot 1](./Screenshot-2026-03-15-233304.png)
+### Landing Page
+![Harview AI Landing Page](./Screenshot-2026-03-15-233304.png)
 
-![Screenshot 2](./Screenshot-2026-03-15-233346.png)
+### User Dashboard
+![Harview AI Dashboard](./Screenshot-2026-03-15-233346.png)
 
 <br />
 
