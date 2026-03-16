@@ -41,7 +41,7 @@ export default function ATSChecker() {
         formData.append('user', JSON.stringify({ uid: auth.currentUser.uid }));
 
         try {
-            const res = await fetch('http://localhost:5000/api/ats/analyze', {
+            const res = await fetch('https://harview-ai.onrender.com/api/ats/analyze', {
                 method: 'POST',
                 body: formData
             });

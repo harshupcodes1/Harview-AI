@@ -25,7 +25,7 @@ function Dashboard() {
       const fetchData = async () => {
         try {
           // 1. Sync User & Get Tokens
-          const syncRes = await fetch('http://localhost:5000/api/auth/sync', {
+          const syncRes = await fetch('https://harview-ai.onrender.com/api/auth/sync', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -44,7 +44,7 @@ function Dashboard() {
           }
 
           // 2. Fetch Interview History
-          const histRes = await fetch(`http://localhost:5000/api/interview/history/${user.uid}`);
+          const histRes = await fetch(`https://harview-ai.onrender.com/api/interview/history/${user.uid}`);
           const histData = await histRes.json();
           if (histData.success) {
             setHistory(histData.history);
@@ -64,7 +64,7 @@ function Dashboard() {
     setIsLoading(true);
     
     try {
-      const resp = await fetch('http://localhost:5000/api/interview/generate', {
+      const resp = await fetch('https://harview-ai.onrender.com/api/interview/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 

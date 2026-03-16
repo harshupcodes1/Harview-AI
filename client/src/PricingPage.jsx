@@ -21,7 +21,7 @@ function PricingPage() {
         
         try {
             // 1. Create Order on Backend
-            const res = await fetch('http://localhost:5000/api/payment/create-order', {
+            const res = await fetch('https://harview-ai.onrender.com/api/payment/create-order', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -51,7 +51,7 @@ function PricingPage() {
                 handler: async function (response) {
                     try {
                         // 3. Verify Payment Signature
-                        const verifyRes = await fetch('http://localhost:5000/api/payment/verify', {
+                        const verifyRes = await fetch('https://harview-ai.onrender.com/api/payment/verify', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({

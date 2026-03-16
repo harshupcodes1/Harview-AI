@@ -10,7 +10,7 @@ function Feedback() {
     useEffect(() => {
         const fetchFeedback = async () => {
             try {
-                const res = await fetch(`http://localhost:5000/api/interview/feedback/${id}`);
+                const res = await fetch(`https://harview-ai.onrender.com/api/interview/feedback/${id}`);
                 const data = await res.json();
                 if(data.success) {
                     setFeedbackData(data.interview);

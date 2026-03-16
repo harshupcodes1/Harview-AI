@@ -14,7 +14,7 @@ export default function Profile() {
             if (user) {
                 try {
                     // Sync User to get tokens
-                    const syncRes = await fetch('http://localhost:5000/api/auth/sync', {
+                    const syncRes = await fetch('https://harview-ai.onrender.com/api/auth/sync', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ 
@@ -28,7 +28,7 @@ export default function Profile() {
                     setUserContext(syncData.user);
 
                     // Fetch History
-                    const histRes = await fetch(`http://localhost:5000/api/interview/history/${user.uid}`);
+                    const histRes = await fetch(`https://harview-ai.onrender.com/api/interview/history/${user.uid}`);
                     const histData = await histRes.json();
                     if (histData.success) {
                         setHistory(histData.history);

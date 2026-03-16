@@ -20,8 +20,8 @@ export default function AdminPanel() {
         if (!token) return;
         try {
             const [statsRes, usersRes] = await Promise.all([
-                fetch('http://localhost:5000/api/admin/stats', { headers: { 'Authorization': `Bearer ${token}` } }),
-                fetch('http://localhost:5000/api/admin/users', { headers: { 'Authorization': `Bearer ${token}` } })
+                fetch('https://harview-ai.onrender.com/api/admin/stats', { headers: { 'Authorization': `Bearer ${token}` } }),
+                fetch('https://harview-ai.onrender.com/api/admin/users', { headers: { 'Authorization': `Bearer ${token}` } })
             ]);
             const statsData = await statsRes.json();
             const usersData = await usersRes.json();
@@ -40,7 +40,7 @@ export default function AdminPanel() {
         setLoading(true);
         setError('');
         try {
-            const res = await fetch('http://localhost:5000/api/admin/login', {
+            const res = await fetch('https://harview-ai.onrender.com/api/admin/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ secretKey })
@@ -79,7 +79,7 @@ export default function AdminPanel() {
         if (!selectedUser || !tokenAmount) return;
         const token = localStorage.getItem('adminToken');
         try {
-            const res = await fetch(`http://localhost:5000/api/admin/users/${selectedUser._id}/tokens`, {
+            const res = await fetch(`https://harview-ai.onrender.com/api/admin/users/${selectedUser._id}/tokens`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                 body: JSON.stringify({ action, amount: parseInt(tokenAmount) })

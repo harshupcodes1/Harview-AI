@@ -143,7 +143,7 @@ function InterviewRoom() {
                 const jobDetailsRaw = localStorage.getItem('jobDetails');
                 const jobDetails = jobDetailsRaw ? JSON.parse(jobDetailsRaw) : { jobRole: 'Mock', jobDesc: 'Mock', experience: '0' };
 
-                const resp = await fetch('http://localhost:5000/api/interview/submit', {
+                const resp = await fetch('https://harview-ai.onrender.com/api/interview/submit', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
