@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import HarviewLogo from './HarviewLogo';
 
 function Footer() {
     const navigate = useNavigate();
@@ -9,7 +10,7 @@ function Footer() {
             <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
                 <div className="col-span-1 md:col-span-2">
                     <div className="flex items-center gap-3 mb-6">
-                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-800 flex items-center justify-center text-white font-black shadow-[0_0_15px_rgba(59,130,246,0.4)] border border-blue-400/30">H</div>
+                        <HarviewLogo size={40} className="drop-shadow-[0_0_10px_rgba(99,102,241,0.5)]" />
                         <span className="text-2xl font-black text-white tracking-tight">Harview <span className="text-blue-500">AI</span></span>
                     </div>
                     <p className="max-w-sm text-sm leading-relaxed mb-6">

@@ -3,6 +3,7 @@ import { auth } from './firebase';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import TokenBadge from './components/TokenBadge';
+import HarviewLogo from './components/HarviewLogo';
 
 function Dashboard() {
   const user = auth.currentUser;
@@ -165,10 +166,7 @@ function Dashboard() {
         >
           {/* Harview AI Logo */}
           <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate('/')}>
-            <div className="relative w-12 h-12 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-800 flex items-center justify-center text-white font-black text-2xl shadow-[0_0_20px_rgba(59,130,246,0.6)] border border-blue-400/30 overflow-hidden group hover:scale-105 transition">
-                <span className="relative z-10">H</span>
-                <div className="absolute inset-0 bg-gradient-to-t from-blue-400/20 to-transparent"></div>
-            </div>
+            <HarviewLogo size={48} className="hover:scale-105 transition-transform drop-shadow-[0_0_14px_rgba(99,102,241,0.7)]" />
             <span className="text-3xl font-black tracking-tight text-white">Harview <span className="text-blue-500">AI</span></span>
           </div>
 

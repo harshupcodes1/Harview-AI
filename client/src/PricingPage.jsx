@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import TokenBadge from './components/TokenBadge';
 import { auth } from './firebase';
+import HarviewLogo from './components/HarviewLogo';
 
 function PricingPage() {
     const navigate = useNavigate();
@@ -108,9 +109,7 @@ function PricingPage() {
 
             <nav className="relative z-10 max-w-7xl mx-auto px-6 mb-16 flex justify-between items-center">
                 <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate('/dashboard')}>
-                    <div className="relative w-12 h-12 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-800 flex items-center justify-center text-white font-black text-2xl shadow-[0_0_20px_rgba(59,130,246,0.6)] border border-blue-400/30 overflow-hidden group hover:scale-105 transition">
-                        <span className="relative z-10">H</span>
-                    </div>
+                    <HarviewLogo size={48} className="hover:scale-105 transition-transform drop-shadow-[0_0_14px_rgba(99,102,241,0.7)]" />
                     <span className="text-3xl font-black tracking-tight text-white">Harview <span className="text-blue-500">AI</span></span>
                 </div>
                 <button onClick={() => navigate('/dashboard')} className="px-6 py-2.5 bg-white/5 border border-white/10 text-white rounded-full hover:bg-white/10 transition font-bold">Back to Dashboard</button>

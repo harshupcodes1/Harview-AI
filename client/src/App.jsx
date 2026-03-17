@@ -3,6 +3,7 @@ import { auth } from './firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 import { motion, useScroll, useTransform } from 'framer-motion';
+import HarviewLogo from './components/HarviewLogo';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -74,10 +75,7 @@ function App() {
         className="flex items-center justify-between p-6 max-w-7xl mx-auto relative z-50"
       >
         <div className="flex items-center gap-3 cursor-pointer">
-            <div className="relative w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-800 flex items-center justify-center text-white font-black text-2xl shadow-[0_0_20px_rgba(59,130,246,0.6)] border border-blue-400/30 overflow-hidden group hover:scale-105 transition">
-                <span className="relative z-10">H</span>
-                <div className="absolute inset-0 bg-gradient-to-t from-blue-400/20 to-transparent"></div>
-            </div>
+            <HarviewLogo size={40} className="hover:scale-105 transition-transform drop-shadow-[0_0_12px_rgba(99,102,241,0.6)]" />
             <span className="text-2xl font-black tracking-tight text-white">Harview <span className="text-blue-500">AI</span></span>
         </div>
         <div>

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate, Link } from 'react-router-dom';
 import { auth } from './firebase';
+import HarviewLogo from './components/HarviewLogo';
 
 export default function Profile() {
     const navigate = useNavigate();
@@ -60,7 +61,7 @@ export default function Profile() {
             <nav className="border-b border-white/5 bg-slate-900/50 backdrop-blur-xl relative z-10 sticky top-0">
                 <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
                     <Link to="/" className="text-xl font-black text-white flex items-center gap-2">
-                        <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-lg flex items-center justify-center shadow-lg shadow-indigo-500/30">HV</div>
+                        <HarviewLogo size={34} className="drop-shadow-[0_0_8px_rgba(99,102,241,0.5)]" />
                         Harview AI
                     </Link>
                     <div className="flex items-center gap-4">
