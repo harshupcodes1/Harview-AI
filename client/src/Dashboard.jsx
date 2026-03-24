@@ -15,17 +15,20 @@ function Dashboard() {
   const [experience, setExperience] = useState('');
   const [language, setLanguage] = useState('English');
   const [isLoading, setIsLoading] = useState(false);
-  const [tokens, setTokens] = useState(0);
+  const [tokens, setTokens] = useState(() => {
+    const saved = localStorage.getItem('hv_tokens');
+    return saved !== null ? parseInt(saved) : 0;
+  });
   const [history, setHistory] = useState([]);
-  const [isLoadingData, setIsLoadingData] = useState(true);
+  const [isLoadingHistory, setIsLoadingHistory] = useState(true);
   const [showCelebration, setShowCelebration] = useState(false); // New User 10 Token Celebration
 
   // Sync User, Fetch Tokens & History
   useEffect(() => {
     if (user) {
-      const fetchData = async () => {
+      // 1. Sync User & Get Tokens independently
+      const fetchTokens = async () => {
         try {
-          // 1. Sync User & Get Tokens
           const syncRes = await fetch('https://harview-ai.onrender.com/api/auth/sync', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -39,24 +42,33 @@ function Dashboard() {
           const syncData = await syncRes.json();
           if (syncData.success) {
             setTokens(syncData.user.tokens);
+            localStorage.setItem('hv_tokens', syncData.user.tokens);
             if (syncData.isNewUser) {
                 setShowCelebration(true);
             }
           }
+        } catch(err) {
+          console.error("Error fetching tokens:", err);
+        }
+      };
 
-          // 2. Fetch Interview History
+      // 2. Fetch Interview History independently
+      const fetchHistory = async () => {
+        try {
           const histRes = await fetch(`https://harview-ai.onrender.com/api/interview/history/${user.uid}`);
           const histData = await histRes.json();
           if (histData.success) {
             setHistory(histData.history);
           }
         } catch(err) {
-          console.error("Error fetching user data:", err);
+          console.error("Error fetching history:", err);
         } finally {
-            setIsLoadingData(false);
+          setIsLoadingHistory(false);
         }
       };
-      fetchData();
+
+      fetchTokens();
+      fetchHistory();
     }
   }, [user]);
 
@@ -173,13 +185,9 @@ function Dashboard() {
           {/* User Controls */}
           <div className="flex items-center gap-2 md:gap-4 bg-white/[0.02] border border-white/[0.05] p-2 pr-4 md:pr-6 rounded-full backdrop-blur-md shadow-lg w-full md:w-auto justify-center md:justify-end">
             
-            {isLoadingData ? (
-                 <div className="w-24 h-10 bg-white/5 animate-pulse rounded-full ml-2"></div>
-            ) : (
-                <div onClick={() => navigate('/pricing')} className="ml-2 cursor-pointer">
-                    <TokenBadge tokens={tokens} />
-                </div>
-            )}
+            <div onClick={() => navigate('/pricing')} className="ml-2 cursor-pointer">
+                <TokenBadge tokens={tokens} />
+            </div>
             
             <div className="w-px h-6 bg-slate-700 mx-2"></div>
             
@@ -293,7 +301,7 @@ function Dashboard() {
                 Analytics & History
             </h3>
             
-            {isLoadingData ? (
+            {isLoadingHistory ? (
                 <div className="bg-[#0A0D1A]/60 backdrop-blur-xl border border-white/[0.05] rounded-[2rem] p-12 flex flex-col items-center justify-center text-center shadow-lg animate-pulse">
                     <div className="w-16 h-16 bg-white/5 rounded-full mb-4"></div>
                     <div className="w-48 h-6 bg-white/5 rounded mb-2"></div>

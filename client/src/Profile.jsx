@@ -14,26 +14,26 @@ export default function Profile() {
         const unsubscribe = auth.onAuthStateChanged(async (user) => {
             if (user) {
                 try {
-                    // Sync User to get tokens
-                    const syncRes = await fetch('https://harview-ai.onrender.com/api/auth/sync', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ 
-                            firebaseUid: user.uid, 
-                            email: user.email, 
-                            name: user.displayName, 
-                            profileImage: user.photoURL 
-                        })
-                    });
+                    // Sync User and Fetch History concurrently
+                    const [syncRes, histRes] = await Promise.all([
+                        fetch('https://harview-ai.onrender.com/api/auth/sync', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ 
+                                firebaseUid: user.uid, 
+                                email: user.email, 
+                                name: user.displayName, 
+                                profileImage: user.photoURL 
+                            })
+                        }),
+                        fetch(`https://harview-ai.onrender.com/api/interview/history/${user.uid}`)
+                    ]);
+                    
                     const syncData = await syncRes.json();
-                    setUserContext(syncData.user);
-
-                    // Fetch History
-                    const histRes = await fetch(`https://harview-ai.onrender.com/api/interview/history/${user.uid}`);
                     const histData = await histRes.json();
-                    if (histData.success) {
-                        setHistory(histData.history);
-                    }
+                    
+                    if (syncData.success) setUserContext(syncData.user);
+                    if (histData.success) setHistory(histData.history);
                 } catch (err) {
                     console.error("Failed to load profile", err);
                 } finally {
@@ -46,12 +46,6 @@ export default function Profile() {
         return () => unsubscribe();
     }, [navigate]);
 
-    if (loading) return (
-        <div className="min-h-screen bg-slate-950 flex items-center justify-center">
-            <div className="w-16 h-16 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
-        </div>
-    );
-
     return (
         <div className="min-h-screen bg-slate-950 font-sans text-slate-200 overflow-hidden relative">
             <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-indigo-600/10 blur-[120px] rounded-full mix-blend-screen pointer-events-none"></div>
@@ -59,15 +53,15 @@ export default function Profile() {
 
             {/* Navbar Placeholder - usually you'd extract this to a Layout component */}
             <nav className="border-b border-white/5 bg-slate-900/50 backdrop-blur-xl relative z-10 sticky top-0">
-                <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-0">
                     <Link to="/" className="text-xl font-black text-white flex items-center gap-2">
                         <HarviewLogo size={34} className="drop-shadow-[0_0_8px_rgba(99,102,241,0.5)]" />
                         Harview AI
                     </Link>
-                    <div className="flex items-center gap-4">
-                        <div className="bg-slate-800/80 px-4 py-2 rounded-xl border border-slate-700 font-bold text-amber-400 flex items-center gap-2 shadow-inner">
+                    <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4">
+                        <div className="bg-slate-800/80 px-3 sm:px-4 py-2 rounded-xl border border-slate-700 font-bold text-amber-400 flex items-center gap-2 shadow-inner text-sm sm:text-base">
                             <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a8 8 0 100 16 8 8 0 000-16zm0 14a6 6 0 110-12 6 6 0 010 12z"></path></svg>
-                            {userContext?.tokens !== undefined ? userContext.tokens : 0} Credits
+                            {userContext?.tokens !== undefined ? userContext.tokens : (localStorage.getItem('hv_tokens') || 0)} Credits
                         </div>
                         <Link to="/ats" className="text-sm font-bold text-slate-300 hover:text-white transition">ATS Check</Link>
                         <Link to="/dashboard" className="text-sm font-bold text-slate-300 hover:text-white transition">Dashboard</Link>
@@ -196,7 +190,12 @@ export default function Profile() {
                                         )}
                                     </div>
                                 </motion.div>
-                            )) : (
+                            )) : loading ? (
+                                <div className="text-center py-16 px-4 animate-pulse">
+                                    <div className="w-16 h-16 border-4 border-indigo-500/50 border-t-indigo-500 rounded-full animate-spin mx-auto mb-4"></div>
+                                    <p className="text-slate-400 font-medium tracking-wide">Syncing matrices...</p>
+                                </div>
+                            ) : (
                                 <div className="text-center py-16 px-4">
                                     <div className="w-20 h-20 bg-slate-900 border-2 border-dashed border-slate-800 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-500">
                                         <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg>

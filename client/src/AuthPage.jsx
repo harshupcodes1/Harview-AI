@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { auth, provider } from './firebase';
-import { signInWithPopup, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from 'firebase/auth';
+import { signInWithPopup, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile, sendPasswordResetEmail } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 
 function AuthPage() {
@@ -10,11 +10,15 @@ function AuthPage() {
     const [password, setPassword] = useState('');
     const [name, setName] = useState('');
     const [loading, setLoading] = useState(false);
+    const [authError, setAuthError] = useState('');
+    const [resetMessage, setResetMessage] = useState('');
     const navigate = useNavigate();
 
     const handleAuth = async (e) => {
         e.preventDefault();
         setLoading(true);
+        setAuthError('');
+        setResetMessage('');
         try {
             if (isLogin) {
                 await signInWithEmailAndPassword(auth, email, password);
@@ -24,18 +28,40 @@ function AuthPage() {
                 await updateProfile(userCredential.user, { displayName: name });
                 // Force sign out so they have to login
                 await auth.signOut();
-                alert("Account created successfully! Please log in.");
+                setResetMessage("Account created successfully! Please log in.");
                 setIsLogin(true);
                 setPassword('');
             }
         } catch (error) {
-            alert(error.message);
+            // Clean up Firebase error messages
+            let errorMessage = "An error occurred during authentication.";
+            if (error.code === 'auth/invalid-credential') errorMessage = "Incorrect email or password. Please try again.";
+            else if (error.code === 'auth/email-already-in-use') errorMessage = "An account with this email already exists.";
+            else if (error.code === 'auth/weak-password') errorMessage = "Password should be at least 6 characters.";
+            else if (error.code) errorMessage = error.message.replace('Firebase: ', '');
+            setAuthError(errorMessage);
         } finally {
             setLoading(false);
         }
     };
 
+    const handleForgotPassword = async () => {
+        setAuthError('');
+        setResetMessage('');
+        if (!email) {
+            setAuthError("Please enter your email address above to reset your password.");
+            return;
+        }
+        try {
+            await sendPasswordResetEmail(auth, email);
+            setResetMessage("Password reset email sent! Please check your inbox.");
+        } catch (error) {
+            setAuthError(error.message.replace('Firebase: ', ''));
+        }
+    };
+
     const handleGoogle = async () => {
+        setAuthError('');
         try {
             await signInWithPopup(auth, provider);
             navigate('/dashboard');
@@ -75,11 +101,24 @@ function AuthPage() {
                         </div>
 
                         <form onSubmit={handleAuth} className="space-y-5">
+                            {authError && isLogin && (
+                                <div className="bg-red-500/10 border border-red-500/50 text-red-400 p-3 rounded-lg text-sm text-center font-medium">
+                                    {authError}
+                                </div>
+                            )}
+                            {resetMessage && isLogin && (
+                                <div className="bg-emerald-500/10 border border-emerald-500/50 text-emerald-400 p-3 rounded-lg text-sm text-center font-medium">
+                                    {resetMessage}
+                                </div>
+                            )}
                             <div>
                                 <input type="email" placeholder="Email Address" required value={email} onChange={(e)=>setEmail(e.target.value)} className="w-full bg-slate-900/50 border border-slate-700 text-white rounded-2xl px-5 py-4 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition shadow-inner font-medium" />
                             </div>
                             <div>
                                 <input type="password" placeholder="Password" required value={password} onChange={(e)=>setPassword(e.target.value)} className="w-full bg-slate-900/50 border border-slate-700 text-white rounded-2xl px-5 py-4 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition shadow-inner font-medium" />
+                                <div className="flex justify-end mt-2">
+                                    <button type="button" onClick={handleForgotPassword} className="text-sm text-blue-400 font-medium hover:text-blue-300 transition">Forgot Password?</button>
+                                </div>
                             </div>
                             <button disabled={loading} type="submit" className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-black text-lg py-4 rounded-2xl shadow-[0_0_20px_rgba(37,99,235,0.4)] hover:shadow-[0_0_30px_rgba(37,99,235,0.6)] hover:-translate-y-0.5 transition-all transform disabled:opacity-50 disabled:cursor-not-allowed mt-2">
                                 {loading ? "Authenticating..." : "Secure Login"}
@@ -113,6 +152,11 @@ function AuthPage() {
                         </div>
 
                         <form onSubmit={handleAuth} className="space-y-4">
+                            {authError && !isLogin && (
+                                <div className="bg-red-500/10 border border-red-500/50 text-red-400 p-3 rounded-lg text-sm text-center font-medium">
+                                    {authError}
+                                </div>
+                            )}
                             <div>
                                 <input type="text" placeholder="Full Name" required value={name} onChange={(e)=>setName(e.target.value)} className="w-full bg-slate-900/50 border border-slate-700 text-white rounded-2xl px-5 py-4 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition shadow-inner font-medium" />
                             </div>
