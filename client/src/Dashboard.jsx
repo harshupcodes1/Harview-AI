@@ -15,9 +15,12 @@ function Dashboard() {
   const [experience, setExperience] = useState('');
   const [language, setLanguage] = useState('English');
   const [isLoading, setIsLoading] = useState(false);
+  const [isSyncingTokens, setIsSyncingTokens] = useState(true);
   const [tokens, setTokens] = useState(() => {
-    const saved = localStorage.getItem('hv_tokens');
-    return saved !== null ? parseInt(saved) : 0;
+    const uid = auth.currentUser?.uid || 'guest';
+    const saved = localStorage.getItem(`hv_tokens_${uid}`);
+    if (saved !== null) return parseInt(saved);
+    return null; // Return null intentionally to indicate "unknown yet" for skeletons
   });
   const [history, setHistory] = useState([]);
   const [isLoadingHistory, setIsLoadingHistory] = useState(true);
@@ -42,13 +45,15 @@ function Dashboard() {
           const syncData = await syncRes.json();
           if (syncData.success) {
             setTokens(syncData.user.tokens);
-            localStorage.setItem('hv_tokens', syncData.user.tokens);
+            localStorage.setItem(`hv_tokens_${user.uid}`, syncData.user.tokens);
             if (syncData.isNewUser) {
                 setShowCelebration(true);
             }
           }
         } catch(err) {
           console.error("Error fetching tokens:", err);
+        } finally {
+          setIsSyncingTokens(false);
         }
       };
 
@@ -186,7 +191,14 @@ function Dashboard() {
           <div className="flex items-center gap-2 md:gap-4 bg-white/[0.02] border border-white/[0.05] p-2 pr-4 md:pr-6 rounded-full backdrop-blur-md shadow-lg w-full md:w-auto justify-center md:justify-end">
             
             <div onClick={() => navigate('/pricing')} className="ml-2 cursor-pointer">
-                <TokenBadge tokens={tokens} />
+                {tokens === null && isSyncingTokens ? (
+                    <div className="animate-pulse flex items-center gap-3 px-4 py-1.5 rounded-full border border-yellow-500/20 bg-yellow-500/10 h-10 w-36 shadow-inner">
+                        <div className="w-6 h-6 rounded-full bg-yellow-500/40"></div>
+                        <div className="h-4 w-16 bg-yellow-500/20 rounded"></div>
+                    </div>
+                ) : (
+                    <TokenBadge tokens={tokens !== null ? tokens : 0} />
+                )}
             </div>
             
             <div className="w-px h-6 bg-slate-700 mx-2"></div>

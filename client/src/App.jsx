@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { auth } from './firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { motion, useScroll, useTransform, useMotionValue } from 'framer-motion';
 import HarviewLogo from './components/HarviewLogo';
 
 function App() {
@@ -17,6 +17,24 @@ function App() {
   }, []);
 
   const handleGetStarted = () => navigate(user ? '/dashboard' : '/auth');
+
+  // 3D Tilt Logic for Preview Card
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+  const cardRotateX = useTransform(mouseY, [-400, 400], [8, -8]);
+  const cardRotateY = useTransform(mouseX, [-400, 400], [-8, 8]);
+
+  function handleMouseMove(event) {
+      const rect = event.currentTarget.getBoundingClientRect();
+      const centerX = rect.x + rect.width / 2;
+      const centerY = rect.y + rect.height / 2;
+      mouseX.set(event.clientX - centerX);
+      mouseY.set(event.clientY - centerY);
+  }
+  function handleMouseLeave() {
+      mouseX.set(0);
+      mouseY.set(0);
+  }
 
   // Animation configurations
   const floatAnim = (delay) => ({
@@ -224,6 +242,63 @@ function App() {
         </motion.div>
 
       </main>
+
+      {/* --- 3D INTERACTIVE PLATFORM PREVIEW (SCROLL REVEAL) --- */}
+      <section className="w-full py-24 relative z-30 flex flex-col items-center">
+          
+          <motion.div 
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.8 }}
+            className="text-center mb-16 px-6"
+          >
+              <h2 className="text-3xl md:text-5xl font-black text-white mb-4"><span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-500">Enterprise-Grade</span> Analytics</h2>
+              <p className="text-slate-400 max-w-2xl mx-auto text-lg hover:text-slate-300 transition-colors">Access your comprehensive mock interview history, visualize your skill progression, and pinpoint technical weaknesses instantly.</p>
+          </motion.div>
+
+          <motion.div 
+              style={{ perspective: 1200 }}
+              onMouseMove={handleMouseMove}
+              onMouseLeave={handleMouseLeave}
+              className="w-full px-4 md:px-8 max-w-[1100px] mx-auto relative group cursor-crosshair pb-16"
+          >
+              {/* Continuous Auto-Floating 3D Animation for Mobile & Idle Desktop */}
+              <motion.div
+                  animate={{ y: [0, -15, 0], rotateX: [2, -2, 2], rotateY: [-2, 2, -2] }}
+                  transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+                  style={{ transformStyle: "preserve-3d" }}
+                  className="w-full h-full"
+              >
+                  {/* Interactive Mouse Tilt Container */}
+                  <motion.div 
+                      style={{ rotateX: cardRotateX, rotateY: cardRotateY, transformStyle: "preserve-3d" }}
+                      className="relative w-full rounded-[2rem] md:rounded-[3rem] border border-white/10 bg-[#0A0D1A]/60 p-2 md:p-3 shadow-[0_30px_60px_rgba(0,0,0,0.5),0_0_60px_rgba(99,102,241,0.15)] hover:shadow-[0_40px_80px_rgba(0,0,0,0.8),0_0_100px_rgba(99,102,241,0.3)] transition-shadow duration-700 overflow-hidden pointer-events-none"
+                  >
+                      {/* macOS-style Top Bar for Pro Mockup Look */}
+                      <div className="w-full bg-[#05070F] h-8 md:h-12 border border-white/5 bg-opacity-95 rounded-t-[1.5rem] md:rounded-t-[2.5rem] flex items-center px-4 md:px-6 gap-2 border-b-white/10 shadow-inner">
+                          <div className="w-2.5 h-2.5 md:w-3.5 md:h-3.5 rounded-full bg-slate-700 shadow-sm"></div>
+                          <div className="w-2.5 h-2.5 md:w-3.5 md:h-3.5 rounded-full bg-slate-700 shadow-sm"></div>
+                          <div className="w-2.5 h-2.5 md:w-3.5 md:h-3.5 rounded-full bg-slate-700 shadow-sm"></div>
+                          <div className="mx-auto w-1/3 md:w-1/4 h-3 md:h-5 bg-white/5 rounded-[4px] md:rounded-md border border-white/5 opacity-50"></div>
+                      </div>
+
+                      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#03020A]/10 to-[#03020A]/80 pointer-events-none z-20 rounded-[3rem]"></div>
+                      <div className="absolute inset-0 bg-indigo-500/5 mix-blend-overlay pointer-events-none z-20 rounded-[3rem]"></div>
+                      
+                      {/* Dashboard Screenshot attached directly below the Mac header */}
+                      <img src="/dashboard-preview.png" alt="Platform Analytics Interface" className="w-full h-auto rounded-b-[1.5rem] md:rounded-b-[2.5rem] bg-slate-900 object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
+                  </motion.div>
+
+                  {/* Action Overlay positioned totally independently from 3D card tilt to avoid gliching hover radius */}
+                  <div className="absolute inset-x-0 bottom-0 md:-bottom-6 flex justify-center z-30 opacity-100 md:opacity-0 group-hover:opacity-100 transition-all duration-500 translate-y-0 md:translate-y-8 group-hover:translate-y-0 pointer-events-auto cursor-pointer">
+                      <button onClick={() => navigate('/auth')} className="bg-indigo-600 shadow-[0_15px_30px_rgba(79,70,229,0.6)] hover:bg-indigo-500 hover:shadow-[0_20px_40px_rgba(79,70,229,0.8)] border border-indigo-400/30 text-white font-black py-4 px-10 rounded-2xl flex items-center gap-3 transition-transform hover:scale-105 pointer-events-auto group/btn">
+                          Dashboard Login <svg className="w-5 h-5 group-hover/btn:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                      </button>
+                  </div>
+              </motion.div>
+          </motion.div>
+      </section>
     </div>
   );
 }
