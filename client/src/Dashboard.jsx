@@ -6,8 +6,17 @@ import TokenBadge from './components/TokenBadge';
 import HarviewLogo from './components/HarviewLogo';
 
 function Dashboard() {
-  const user = auth.currentUser;
+  const [user, setUser] = useState(auth.currentUser);
+  const [isAuthLoading, setIsAuthLoading] = useState(true);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((u) => {
+      setUser(u);
+      setIsAuthLoading(false);
+    });
+    return () => unsubscribe();
+  }, []);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [jobRole, setJobRole] = useState('');
@@ -107,6 +116,14 @@ function Dashboard() {
       setIsLoading(false);
     }
   };
+
+  if (isAuthLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#03020A]">
+        <div className="w-12 h-12 border-4 border-slate-700 border-t-blue-500 rounded-full animate-spin"></div>
+      </div>
+    );
+  }
 
   if (!user) {
     return (
@@ -373,10 +390,10 @@ function Dashboard() {
             
             <button 
               onClick={() => setIsModalOpen(false)}
-              className="absolute top-6 right-6 text-slate-400 hover:text-white transition bg-slate-800/40 hover:bg-slate-700/80 rounded-full p-2.5 backdrop-blur-md border border-white/5 hover:scale-110 active:scale-95"
+              className="absolute top-4 right-4 md:top-6 md:right-6 text-slate-500 hover:text-white bg-white/5 hover:bg-white/10 rounded-full p-3 backdrop-blur-md border border-white/10 transition-all duration-300 transform hover:scale-105 hover:rotate-90 z-20"
               disabled={isLoading}
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+              <svg className="w-5 h-5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
 
             <div className="flex items-center gap-4 mb-3 relative z-10">

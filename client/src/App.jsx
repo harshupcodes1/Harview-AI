@@ -292,7 +292,7 @@ function App() {
 
                   {/* Action Overlay positioned totally independently from 3D card tilt to avoid gliching hover radius */}
                   <div className="absolute inset-x-0 bottom-0 md:-bottom-6 flex justify-center z-30 opacity-100 md:opacity-0 group-hover:opacity-100 transition-all duration-500 translate-y-0 md:translate-y-8 group-hover:translate-y-0 pointer-events-auto cursor-pointer">
-                      <button onClick={() => navigate('/auth')} className="bg-indigo-600 shadow-[0_15px_30px_rgba(79,70,229,0.6)] hover:bg-indigo-500 hover:shadow-[0_20px_40px_rgba(79,70,229,0.8)] border border-indigo-400/30 text-white font-black py-4 px-10 rounded-2xl flex items-center gap-3 transition-transform hover:scale-105 pointer-events-auto group/btn">
+                      <button onClick={() => navigate(user ? '/dashboard' : '/auth')} className="bg-indigo-600 shadow-[0_15px_30px_rgba(79,70,229,0.6)] hover:bg-indigo-500 hover:shadow-[0_20px_40px_rgba(79,70,229,0.8)] border border-indigo-400/30 text-white font-black py-4 px-10 rounded-2xl flex items-center gap-3 transition-transform hover:scale-105 pointer-events-auto group/btn">
                           Dashboard Login <svg className="w-5 h-5 group-hover/btn:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
                       </button>
                   </div>
